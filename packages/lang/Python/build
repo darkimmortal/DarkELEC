@@ -47,12 +47,8 @@ OPT="-g -fwrapv -Wall -Wstrict-prototypes" \
              --disable-ipv6 \
              --disable-profiling \
              --without-pydebug \
-             --without-doc-strings \
-             --without-tsc \
              --with-pymalloc \
-             --without-fpectl \
              --with-wctype-functions \
-             --without-cxx-main \
              --with-system-ffi \
              --with-system-expat \
 

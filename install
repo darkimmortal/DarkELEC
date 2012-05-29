@@ -1,0 +1,30 @@
+#!/bin/bash
+# dark install script
+
+echo Unmounting...
+umount /dev/${1}{1,5}
+umount /dev/${1}
+
+echo Partitioning...
+parted -s /dev/${1} mklabel msdos
+parted -s /dev/${1} unit cyl mkpart primary fat32 -- 0 16
+parted -s /dev/${1} set 1 boot on
+parted -s /dev/${1} unit cyl mkpart primary ext2 -- 16 -2
+mkfs.vfat -n System /dev/${1}1
+mkfs.ext4 -L Storage /dev/${1}1
+partprobe
+
+echo Copying data...
+mount /dev/${1}1 /media/System
+mount /dev/${1}1 /media/Storage
+cp arm128_start.elf /media/System/start.elf
+cp *.bin /media/System/
+echo "boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 ssh quiet" > /media/System/cmdline.txt
+
+echo Copying ROM...
+cp target/OpenELEC-RPi.arm-devel-20120424035956-r10695.system /media/System/SYSTEM
+cp target/OpenELEC-RPi.arm-devel-20120424035956-r10695.kernel /media/System/kernel.img
+
+echo Unmounting...
+umount /dev/${1}{1,5}
+umount /dev/${1}

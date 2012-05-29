@@ -43,6 +43,11 @@ LDFLAGS="$LDFLAGS -lexpat" \
              --enable-unicode=ucs4 \
              --with-system-expat \
 
+
+mkdir -p Modules
+  cp $ROOT/$PKG_DIR/config/Setup ./Modules
+
+
 make PYTHON_MODULES_INCLUDE="$HOST_INCDIR" \
      PYTHON_MODULES_LIB="$HOST_LIBDIR" \
      PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
