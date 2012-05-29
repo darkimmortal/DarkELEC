@@ -44,10 +44,6 @@ LDFLAGS="$LDFLAGS -lexpat" \
              --with-system-expat \
 
 
-mkdir -p Modules
-  cp $ROOT/$PKG_DIR/../Python/config/Setup ./Modules
-
-
 make PYTHON_MODULES_INCLUDE="$HOST_INCDIR" \
      PYTHON_MODULES_LIB="$HOST_LIBDIR" \
      PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
