@@ -45,7 +45,7 @@ LDFLAGS="$LDFLAGS -lexpat" \
 
 
 mkdir -p Modules
-  cp $ROOT/$PKG_DIR/config/Setup ./Modules
+  cp $ROOT/$PKG_DIR/../Python/config/Setup ./Modules
 
 
 make PYTHON_MODULES_INCLUDE="$HOST_INCDIR" \
