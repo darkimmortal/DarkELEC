@@ -8,6 +8,8 @@ umount /dev/${1}3
 umount /dev/${1}4
 umount /dev/${1}
 
+sleep 3
+
 echo Partitioning...
 parted -s /dev/${1} mklabel msdos
 parted -s /dev/${1} unit cyl mkpart primary fat32 -- 0 16
@@ -16,6 +18,8 @@ parted -s /dev/${1} unit cyl mkpart primary ext2 -- 16 -2
 mkfs.vfat -n System /dev/${1}1
 mkfs.ext4 -L Storage /dev/${1}2
 partprobe
+
+sleep 3
 
 echo Copying data...
 mount /dev/${1}1 /media/System
@@ -26,7 +30,9 @@ echo "boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 ssh quiet" > /media/System/cmdline
 
 echo Copying ROM...
 cp target/$(ls -t target | head -1) /media/System/SYSTEM
-cp target/umount $(ls -t target | head -2 | tail -1) /media/System/kernel.img
+cp target/$(ls -t target | head -2 | tail -1) /media/System/kernel.img
+
+sleep 3
 
 echo Unmounting...
 umount /dev/${1}1
