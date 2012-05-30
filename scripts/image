@@ -104,6 +104,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
 
+  $SCRIPTS/install acpid
+  
 # Network support
   [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
 
