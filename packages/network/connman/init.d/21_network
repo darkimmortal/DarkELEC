@@ -202,6 +202,8 @@ fi
   # starting Connection manager
     progress "starting Connection manager"
 
+    usleep 15000000
+	
     while true; do
       /usr/sbin/connmand -n > /dev/null 2>&1
       usleep 250000
