@@ -136,7 +136,7 @@
 # Plugins for XBMC to install (SABnzbd)
 # Space separated list is supported,
 # e.g. XBMC_PLUGINS="SABnzbd"
-  XBMC_PLUGINS=""
+  XBMC_PLUGINS="iPlayer SportsDevil YouTube Veetle"
 
 # build and install 'RSXS' Screensaver (yes / no)
   XBMC_SCR_RSXS="no"

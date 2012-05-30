@@ -306,7 +306,7 @@ def remove_extra_spaces(data):
    
 if __name__ == "__main__":
 	try:
-		geturllib.SetCacheDir( xbmc.translatePath(os.path.join( "T:"+os.sep,"addon_data", gPluginName,'cache' )) )
+		geturllib.SetCacheDir("/storage/.xbmc/temp/addon_4od/cache"  )
 		
 		if ( mycgi.EmptyQS() ):
 			ShowCategories()
