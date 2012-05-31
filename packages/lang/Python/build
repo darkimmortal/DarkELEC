@@ -51,6 +51,10 @@ OPT="-g -fwrapv -Wall -Wstrict-prototypes" \
              --with-wctype-functions \
              --with-system-ffi \
              --with-system-expat \
+             --without-fpectl \
+             --without-doc-strings \
+             --without-tsc
+
 
 mkdir -p Modules
   cp $ROOT/$PKG_DIR/config/Setup ./Modules
