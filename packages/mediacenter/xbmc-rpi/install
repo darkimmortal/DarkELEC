@@ -93,11 +93,11 @@ mkdir -p $PYTHON_LIBDIR/site-packages/xbmc
 # install project specific configs
   mkdir -p $INSTALL/usr/share/xbmc/config
     if [ -f $PROJECT_DIR/$PROJECT/xbmc/guisettings.xml ]; then
-      cp -R $PROJECT_DIR/$PROJECT/xbmc/guisettings.xml $INSTALL/usr/share/xbmc/config
+      cp -R $PROJECT_DIR/$PROJECT/xbmc/guisettings.xml $INSTALL/usr/share/xbmc/userdata
     fi
 
     if [ -f $PROJECT_DIR/$PROJECT/xbmc/sources.xml ]; then
-      cp -R $PROJECT_DIR/$PROJECT/xbmc/sources.xml $INSTALL/usr/share/xbmc/config
+      cp -R $PROJECT_DIR/$PROJECT/xbmc/sources.xml $INSTALL/usr/share/xbmc/userdata
     fi
 
   mkdir -p $INSTALL/usr/share/xbmc/system/
