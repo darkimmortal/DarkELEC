@@ -56,8 +56,6 @@ cd $PKG_BUILD
             --disable-nmcompat \
             --disable-polkit \
             --enable-client \
-            --disable-tools \
-            --disable-test \
             --disable-fake \
             --disable-capng \
             --enable-datafiles \

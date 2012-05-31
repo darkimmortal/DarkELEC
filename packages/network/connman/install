@@ -48,5 +48,5 @@ fi
 
 
 mkdir -p $INSTALL/usr/bin
-	chmod +x $PKG_DIR/test/*
-	cp $PKG_DIR/test/* $INSTALL/usr/bin/
+	chmod +x $PKG_BUILD/test/*
+	cp $PKG_BUILD/test/* $INSTALL/usr/bin/
