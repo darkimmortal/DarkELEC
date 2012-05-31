@@ -1,5 +1,4 @@
 #!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,7 +19,29 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
+date=$(date +%Y%m%d)
+sundtek_base=sundtek-$date
 
-for i in `ls xbmc-*.patch`; do
-  mv $i `echo $i | sed "s,$1,$2,g"`
-done
+rm -f installer.tar.gz
+rm -fr $sundtek_base
+
+echo "getting 32bit driver..."
+wget --passive-ftp --no-check-certificate -O installer.tar.gz http://sundtek.de/media/netinst/32bit/installer.tar.gz
+echo "unpacking..."
+mkdir -p $sundtek_base
+tar xzf installer.tar.gz -C $sundtek_base
+chmod 755 $sundtek_base/opt/bin/*
+echo "packing..."
+tar czf $sundtek_base-i386.tar.gz $sundtek_base
+rm -fr $sundtek_base
+
+echo "getting 64bit driver..."
+wget --passive-ftp --no-check-certificate -O installer.tar.gz http://sundtek.de/media/netinst/64bit/installer.tar.gz
+echo "unpacking..."
+mkdir -p $sundtek_base
+tar xzf installer.tar.gz -C $sundtek_base
+rm -f installer.tar.gz
+chmod 755 $sundtek_base/opt/bin/*
+echo "packing..."
+tar czf $sundtek_base-x86_64.tar.gz $sundtek_base
+rm -fr $sundtek_base

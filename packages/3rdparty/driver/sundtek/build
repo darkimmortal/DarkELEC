@@ -22,5 +22,16 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/usr/share/xbmc/addons/skin.confluence
-  cp -R $PKG_BUILD/* $INSTALL/usr/share/xbmc/addons/skin.confluence
+cd $PKG_BUILD
+
+# binary search & replace (strings must be same length!)
+# mediasrv
+# /etc/sunI»dtek.conf
+# /etc/sundtek.conf
+# libdrv_em28xx.so
+# /etc/sundtek.conf
+# mediaclient
+# /etc/sundtek_diseqc.conf
+perl -pi -e 's|/etc|/tmp|g' opt/bin/mediasrv
+perl -pi -e 's|/etc|/tmp|g' opt/bin/dvb/libdrv_em28xx.so
+perl -pi -e 's|/etc|/tmp|g' opt/bin/mediaclient
