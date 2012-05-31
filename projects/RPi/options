@@ -9,8 +9,8 @@
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
   GREETING0="##############################################"
-  GREETING1="#       DarkELEC - Custom build by Dark      #"
-  GREETING2="#        rndis_wlan support and more         #"
+  GREETING1="#  DarkELEC - Custom build by Luke Foreman   #"
+  GREETING2="#             Based on OpenELEC              #"
   GREETING3="##############################################"
   GREETING4=""
 
