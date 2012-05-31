@@ -107,7 +107,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   $SCRIPTS/install acpid
   
 # Network support
-  [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
+  [ "$NETWORK" = "yes" ] && $SCRIPTS/install network && $SCRIPTS/install wireless_tools
 
 # Graphic support
   [ "$XORG_SUPPORT" = "yes" ] && $SCRIPTS/install xorg-server
