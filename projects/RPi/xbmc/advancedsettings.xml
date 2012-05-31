@@ -12,4 +12,11 @@
   <samba>
     <clienttimeout>30</clienttimeout>
   </samba>
+  <lookandfeel>
+    <enablerssfeeds>false</enablerssfeeds>
+  </lookandfeel>
+  <skinsettings>
+    <setting type="bool" name="skin.confluence.ShowBackgroundVideo">true</setting>
+    <setting type="bool" name="skin.confluence.ShowBackgroundVis">true</setting>
+  </skinsettings>
 </advancedsettings>
