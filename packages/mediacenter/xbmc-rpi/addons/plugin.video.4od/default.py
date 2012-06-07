@@ -8,12 +8,15 @@ import re
 import geturllib
 import fourOD_token_decoder
 import mycgi
+import urllib2
+
 
 gPluginName  = 'plugin.video.4od'
 gPluginHandle = int(sys.argv[1])
 gBaseURL = sys.argv[0]
 
-
+# Only used if we fail to parse the URL from the website
+gSwfPlayerDefault = 'http://www.channel4.com/static/programmes/asset/flash/swf/4odplayer_am2.1.swf'
 #==============================================================================
 # ShowCategories
 #
@@ -73,39 +76,97 @@ def ShowCategory( category ):
 
 #==============================================================================
 
+def GetSwfPlayer( html ):
+	try:
+		swfRoot = re.search( 'var swfRoot = \'(.*?)\'', html, re.DOTALL ).groups()[0]
+		fourodPlayerFile = re.search( 'var fourodPlayerFile = \'(.*?)\'', html, re.DOTALL ).groups()[0]
+
+		#TODO Find out how to get the "asset/flash/swf/" part dynamically
+		swfPlayer = "http://www.channel4.com" + swfRoot + "asset/flash/swf/" + fourodPlayerFile
+
+		# Resolve redirect, if any
+		req = urllib2.Request(swfPlayer)
+		res = urllib2.urlopen(req)
+		swfPlayer = res.geturl()
+	except Exception, e:
+		print e
+		print "WARNING Unable to determine swfPlayer URL. Using default: " + gSwfPlayerDefault
+		swfPlayer = gSwfPlayerDefault
+	
+	return swfPlayer
+
+def GetEpisodeDetails(listItem):
+	dataKeyValues = re.findall('data-([a-zA-Z\-]*?)="(.*?)"', listItem, re.DOTALL)
+	values = []
+	epNum=''
+	assetId=''
+	url=''
+	img=''
+	premieredDate=''
+	progTitle=''
+	epTitle=''
+	description=''
+	seriesNum=''
+
+	for dataKeyValue in dataKeyValues:
+		if (dataKeyValue[0] == 'episode-number'):
+			epNum=dataKeyValue[1]
+		if (dataKeyValue[0] == 'assetid'):
+			assetId=dataKeyValue[1]
+		if (re.search('episode[Uu]rl', dataKeyValue[0]) ):
+			url=dataKeyValue[1]
+		if (dataKeyValue[0] == 'image-url'):
+			img=dataKeyValue[1]
+		if (re.search('tx[Dd]ate', dataKeyValue[0]) ):
+			premieredDate=dataKeyValue[1]
+		if (re.search('episode[Tt]itle', dataKeyValue[0]) ):
+			progTitle=dataKeyValue[1]
+		if (re.search('episode[Ii]nfo', dataKeyValue[0]) ):
+			epTitle=dataKeyValue[1]
+		if (re.search('episode[Ss]ynopsis', dataKeyValue[0]) ):
+			description=dataKeyValue[1]
+		if (dataKeyValue[0] == 'series-number'):
+			seriesNum=dataKeyValue[1]
+
+	return (epNum, assetId, url, img, premieredDate, progTitle, epTitle, description, seriesNum)
+
 def ShowEpisodes( showId, showTitle ):
 	html = geturllib.GetURL( "http://www.channel4.com/programmes/" + showId + "/4od", 20000 ) # ~6 hrs
+
+	swfPlayer = GetSwfPlayer( html )	
+	
 	genre = re.search( '<meta name="primaryBrandCategory" content="(.*?)"/>', html, re.DOTALL ).groups()[0]
 	ol = re.search( '<ol class="all-series">(.*?)</div>', html, re.DOTALL ).groups()[0]
-	epsInfo = re.findall( '<li.*?data-episode-number="(.*?)".*?data-assetid="(.*?)".*?data-episodeurl="(.*?)".*?data-image-url="(.*?)".*?data-txdate="(.*?)".*?data-episodetitle="(.*?)".*?data-episodeinfo="(.*?)".*?data-episodesynopsis="(.*?)".*?data-series-number="(.*?)"', ol, re.DOTALL )
-	
+
+	listItemsHtml = re.findall( '<li(.*?[^p])>', ol, re.DOTALL )
+
 	listItems = []
 	epsDict = dict()
-	for epInfo in epsInfo:
-		epNum = epInfo[0]
+	for listItemHtml in listItemsHtml:
+		(epNum, assetId, url, img, premieredDate, progTitle, epTitle, description, seriesNum) = GetEpisodeDetails(listItemHtml)
+		
+		if (assetId == ''):
+			continue;
+
 		try: epNumInt = int(epNum)
 		except: epNumInt = ""
-		premieredDate = epInfo[4]
-		seriesNum = epInfo[8]
 		if ( seriesNum <> "" and epNum <> "" ):
 			fn = showId + ".s%0.2ie%0.2i" % (int(seriesNum),int(epNum))
 		else:
 			fn = showId
-		id = epInfo[1]
 		
-		if ( not id in epsDict ):
-			epsDict[id] = 1
+		if ( not assetId in epsDict ):
+			epsDict[assetId] = 1
 			
-			img = epInfo[3]
-			progTitle = epInfo[5].strip()
+			progTitle = progTitle.strip()
 			progTitle = progTitle.replace( '&amp;', '&' )
-			epTitle = epInfo[6].strip()
+			epTitle = epTitle.strip()
 			if ( progTitle == showTitle and epTitle <> "" ):
 				label = epTitle
 			else:
 				label = progTitle
-			url = "http://www.channel4.com" + epInfo[2]
-			description = remove_extra_spaces(remove_html_tags(epInfo[7]))
+			url = "http://www.channel4.com" + url
+			description = remove_extra_spaces(remove_html_tags(description))
 			description = description.replace( '&amp;', '&' )
 			description = description.replace( '&pound;', '£' )
 			description = description.replace( '&quot;', "'" )
@@ -117,7 +178,7 @@ def ShowEpisodes( showId, showTitle ):
 			newListItem = xbmcgui.ListItem( label )
 			newListItem.setThumbnailImage(thumbnail)
 			newListItem.setInfo('video', {'Title': label, 'Plot': description, 'PlotOutline': description, 'Genre': genre, 'premiered': premieredDate, 'Episode': epNumInt})
-			url = gBaseURL + '?ep=' + mycgi.URLEscape(id) + "&title=" + mycgi.URLEscape(label) + "&fn=" + mycgi.URLEscape(fn)
+			url = gBaseURL + '?ep=' + mycgi.URLEscape(assetId) + "&title=" + mycgi.URLEscape(label) + "&fn=" + mycgi.URLEscape(fn) + "&swfPlayer=" + mycgi.URLEscape(swfPlayer) 
 			listItems.append( (url,newListItem,False) )
 	
 	xbmcplugin.addDirectoryItems( handle=gPluginHandle, items=listItems )
@@ -127,14 +188,14 @@ def ShowEpisodes( showId, showTitle ):
 #==============================================================================
 
 
-def PlayOrDownloadEpisode( episodeId, title, defFilename='' ):
+def PlayOrDownloadEpisode( episodeId, title, defFilename='', swfPlayer='' ):
 	import xbmcaddon
 	addon = xbmcaddon.Addon(id=gPluginName)
 	action = addon.getSetting( 'select_action' )
 	if ( action == 'Ask' ):
 		dialog = xbmcgui.Dialog()
 		ret = dialog.yesno(title, 'Do you want to play or download?', '', '', 'Download',  'Play') # 1=Play; 0=Download
-	elif ( action == 'Downlad' ):
+	elif ( action == 'Download' ):
 		ret = 0
 	else:
 		ret = 1
@@ -146,10 +207,14 @@ def PlayOrDownloadEpisode( episodeId, title, defFilename='' ):
 	token = re.search( '<token>(.*?)</token>', uriData, re.DOTALL).groups()[0]
 	cdn = re.search( '<cdn>(.*?)</cdn>', uriData, re.DOTALL).groups()[0]
 	decodedToken = fourOD_token_decoder.Decode4odToken(token)
+
 	if ( cdn ==  "ll" ):
-		ip = re.search( '<ip>(.*?)</ip>', uriData, re.DOTALL ).groups()[0]
 		e = re.search( '<e>(.*?)</e>', uriData, re.DOTALL ).groups()[0]
-		auth = "e=%s&ip=%s&h=%s" % (e,ip,decodedToken)
+		ip = re.search( '<ip>(.*?)</ip>', uriData, re.DOTALL )
+		if (ip):
+			auth = "e=%s&ip=%s&h=%s" % (e,ip.groups()[0],decodedToken)
+		else:
+			auth = "e=%s&h=%s" % (e,decodedToken)
 	else:
 		fingerprint = re.search( '<fingerprint>(.*?)</fingerprint>', uriData, re.DOTALL ).groups()[0]
 		slist = re.search( '<slist>(.*?)</slist>', uriData, re.DOTALL ).groups()[0]
@@ -161,8 +226,7 @@ def PlayOrDownloadEpisode( episodeId, title, defFilename='' ):
 		url = url.replace( '.com/', '.com:1935/' )
 		playpath = re.search( '(mp4:.*)', streamUri, re.DOTALL ).groups()[0]
 		playpath = playpath + '?' + auth
-		swfplayer = "http://www.channel4.com/static/programmes/asset/flash/swf/4odplayer-11.8.5.swf"
-		playURL = "%s?ovpfv=1.1&%s playpath=%s swfurl=%s swfvfy=true" % (url,auth,playpath,swfplayer)
+		playURL = "%s?ovpfv=1.1&%s playpath=%s swfurl=%s swfvfy=true" % (url,auth,playpath,swfPlayer)
 		
 		li = xbmcgui.ListItem(title)
 		li.setInfo('video', {'Title': title})
@@ -204,10 +268,10 @@ def PlayOrDownloadEpisode( episodeId, title, defFilename='' ):
 			if ( downloadFolder == '' ):
 				return
 				
-		savePath = os.path.join( "T:"+os.sep, downloadFolder, filename )
+		savePath = os.path.join( downloadFolder, filename )
 		from subprocess import Popen, PIPE, STDOUT
 		
-		cmdline = CreateRTMPDUMPCmd( rtmpdump_path, streamUri, auth, savePath ) 
+		cmdline = CreateRTMPDUMPCmd( rtmpdump_path, streamUri, auth, savePath, swfPlayer ) 
 		xbmc.executebuiltin('XBMC.Notification(4oD,Starting download: %s)' % filename)
 		p = Popen( cmdline, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT )
 		x = p.stdout.read()
@@ -222,7 +286,7 @@ def PlayOrDownloadEpisode( episodeId, title, defFilename='' ):
 
 #==============================================================================
 
-def CreateRTMPDUMPCmd( rtmpdump_path, streamUri, auth, savePath ):
+def CreateRTMPDUMPCmd( rtmpdump_path, streamUri, auth, savePath, swfPlayer ):
 	
 	#rtmpdump
 	#-r "rtmpe://ak.securestream.channel4.com:1935/4oD/?ovpfv=1.1&auth=da_ana4cDc3d_d4dtaPd0clcndUa3claHcG-boODFj-eS-gxS-s8p4mbq4tRlim9lSmdpcp6l1nb&aifp=v002&slist=assets/CH4_08_02_900_47548001001002_005.mp4"
@@ -239,17 +303,15 @@ def CreateRTMPDUMPCmd( rtmpdump_path, streamUri, auth, savePath ):
 	rtmpUrl = rtmpUrl + "?ovpfv=1.1&" + auth
 	app = re.search( '.com/(.*?)mp4:', streamUri, re.DOTALL ).groups()[0]
 	app = app + "?ovpfv=1.1&" + auth
-	#swfplayer = "http://www.channel4.com/static/programmes/asset/flash/swf/4odplayer-11.8.swf"
-	swfplayer = "http://www.channel4.com/static/programmes/asset/flash/swf/4odplayer-11.8.5.swf"
 	playpath = re.search( '.*?(mp4:.*)', streamUri, re.DOTALL ).groups()[0]
 	playpath = playpath + "?" + auth
 	args = [
-				rtmpdump_path,
+				'"%s"' % rtmpdump_path,
 				"--rtmp", '"%s"' % rtmpUrl,
 				"--app", '"%s"' % app,
 				#"--flashVer", '"WIN 10,3,183,7"',
 				"--flashVer", '"WIN 11,0,1,152"',
-				"--swfVfy", '"%s"' % swfplayer,
+				"--swfVfy", '"%s"' % swfPlayer,
 				#"--pageUrl xxxxxx",
 				"--conn", "Z:",
 				"--playpath", '"%s"'%playpath,
@@ -305,13 +367,13 @@ def remove_extra_spaces(data):
     return p.sub(' ', data)
    
 if __name__ == "__main__":
+
 	try:
-		geturllib.SetCacheDir("/storage/.xbmc/temp/addon_4od/cache"  )
-		
+		geturllib.SetCacheDir( xbmc.translatePath( os.path.join( "special://masterprofile","addon_data", gPluginName,'cache' ) ) )
 		if ( mycgi.EmptyQS() ):
 			ShowCategories()
 		else:
-			(category, showId, episodeId, title, search) = mycgi.Params( 'category', 'show', 'ep', 'title', 'search' )
+			(category, showId, episodeId, title, search, swfPlayer) = mycgi.Params( 'category', 'show', 'ep', 'title', 'search', 'swfPlayer' )
 			if ( search <> '' ):
 				DoSearch()
 			elif ( showId <> '' ):
@@ -319,7 +381,7 @@ if __name__ == "__main__":
 			elif ( category <> '' ):
 				ShowCategory( category )
 			elif ( episodeId <> '' ):
-				PlayOrDownloadEpisode( episodeId, title, mycgi.Param('fn') )
+				PlayOrDownloadEpisode( episodeId, title, mycgi.Param('fn'), swfPlayer )
 	except:
 		# Make sure the text from any script errors are logged
 		import traceback
