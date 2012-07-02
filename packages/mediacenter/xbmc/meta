@@ -29,7 +29,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.xbmc.org"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="boost Python zlib bzip2 systemd pcre ffmpeg alsa-lib libass curl libssh rtmpdump fontconfig libmad libogg libvorbis libmodplug faad2 flac lame libmpeg2 SDL SDL_mixer SDL_image yajl alsa bc xbmc-addon-settings"
+PKG_DEPENDS="boost Python zlib bzip2 systemd pcre ffmpeg alsa-lib libass curl libssh rtmpdump fontconfig freetype libmad libogg libvorbis libmodplug faad2 flac lame libmpeg2 SDL SDL_mixer SDL_image yajl sqlite alsa bc xbmc-addon-settings"
 PKG_BUILD_DEPENDS="toolchain boost Python zlib bzip2 systemd lzo pcre alsa-lib ffmpeg libass enca curl libssh rtmpdump fontconfig fribidi libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libvorbis libcdio libmodplug faad2 flac lame libmpeg2 SDL SDL_mixer SDL_image yajl sqlite mysql"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -38,6 +38,13 @@ PKG_LONGDESC="XBMC Media Center (which was formerly named Xbox Media Center) is 
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
+
+# needed for hosttools (Texturepacker)
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS lzo-host SDL-host SDL_image-host"
+
+# some python stuff needed for various addons
+  PKG_DEPENDS="$PKG_DEPENDS Imaging"
+  PKG_DEPENDS="$PKG_DEPENDS simplejson"
 
 if [ "$DISPLAYSERVER" = "xorg-server" ]; then
   # for libX11 support
@@ -143,10 +150,7 @@ if [ "$XVBA" = yes ]; then
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS xf86-video-fglrx"
 fi
 
-# some python stuff needed for various addons
-  PKG_DEPENDS="$PKG_DEPENDS Imaging"
-  PKG_DEPENDS="$PKG_DEPENDS simplejson"
-
 if [ "$PVR" = yes ]; then
+  PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-xvdr xbmc-addon-njoy"
   PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-xvdr xbmc-addon-vuplus"
 fi

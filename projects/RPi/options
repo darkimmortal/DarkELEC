@@ -85,16 +85,13 @@
   esac
 
 # Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="normal"
+  OPTIMIZATIONS="speed"
 
 # Project CFLAGS
   PROJECT_CFLAGS=""
 
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="yes"
-
-# Prelink binarys and librarys
-  PRELINK_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
   BOOTLOADER="bcm2835-bootloader"
@@ -146,6 +143,9 @@
 
 # build and install 'GOOM' Visualization (yes / no)
   XBMC_VIS_GOOM="no"
+
+# build and install ALSA Audio support (yes / no)
+  ALSA_SUPPORT="yes"
 
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
