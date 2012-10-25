@@ -4,7 +4,23 @@
   <showexitbutton>false</showexitbutton>
   <cputempcommand>cputemp</cputempcommand>
   <gputempcommand>gputemp</gputempcommand>
+  <video>
+    <latency>
+      <delay>0</delay>
+      <refresh>
+        <min>23</min>
+        <max>24</max>
+        <delay>175</delay>
+      </refresh>
+    </latency>
+  </video>
   <samba>
     <clienttimeout>30</clienttimeout>
   </samba>
+  <services>
+    <webserver>true</webserver>
+        <webserverpassword></webserverpassword>
+        <webserverport>8080</webserverport>
+        <webserverusername></webserverusername>
+   </services>
 </advancedsettings>

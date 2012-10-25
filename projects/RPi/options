@@ -1,4 +1,5 @@
 # Name of the Distro to build (full name, without special charcters)
+<<<<<<< HEAD
   if [ "$XBMC" = frodo ]; then
     DISTRONAME="OpenELEC_frodo"
   else
@@ -8,6 +9,9 @@
   if [ "$PVR" = yes ]; then
     DISTRONAME="${DISTRONAME}_PVR"
   fi
+=======
+  DISTRONAME="OpenELEC"
+>>>>>>> upstream/master
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
   GREETING0="##############################################"
@@ -85,7 +89,7 @@
   esac
 
 # Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="fast"
+  OPTIMIZATIONS="speed"
 
 # Project CFLAGS
   PROJECT_CFLAGS=""
@@ -102,7 +106,7 @@
 # Kernel to use. values can be:
 # default:  default mainline kernel
 # ti-omap4: Ti's OMAP4 kernel
-  LINUX="default"
+  LINUX="3.2"
 
 # use linux-next (latest rc) instead latest released version
   LINUX_NEXT="no"
@@ -111,13 +115,7 @@
   SQUASHFS_COMPRESSION="lzo"
 
 # Mediacenter to use (xbmc / no)
-  if [ "$XBMC" = frodo ]; then
-    MEDIACENTER="xbmc-frodo"
-  elif [ "$PROJECT" = RPi ]; then
-    MEDIACENTER="xbmc-rpi"
-  else
-    MEDIACENTER="xbmc"
-  fi
+  MEDIACENTER="xbmc"
 
 # Skins to install (Confluence)
 # Space separated list is supported,
@@ -145,7 +143,7 @@
   XBMC_VIS_GOOM="no"
 
 # build and install ALSA Audio support (yes / no)
-  ALSA_SUPPORT="yes"
+  ALSA_SUPPORT="no"
 
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
@@ -168,14 +166,10 @@
   BLURAY_SUPPORT="yes"
 
 # additional drivers to install:
-# AF9035:           Afa Technologies Inc. AF9035A USB DVB Device
-# asix-ax887xx:     Asix AX887xx USB LAN Driver
+# for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
-# e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
-  ADDITIONAL_DRIVERS=""
-  if [ "$PVR" = yes ]; then
-    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
-  fi
+# e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+  ADDITIONAL_DRIVERS="RTL8192CU"
 
 # build with network support (yes / no)
   NETWORK="yes"
@@ -212,6 +206,9 @@
 
 # build and install SSH Guard (yes / no)
   SSHGUARD_SUPPORT="no"
+
+# build and install PPP support (yes / no)
+  PPTP_SUPPORT="yes"
 
 # build and install diskmounter service (udisks)
 # this service provide auto mounting support for external drives
@@ -300,10 +297,7 @@
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,
 # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-  FIRMWARE="misc-firmware wlan-firmware"
-  if [ "$PVR" = yes ]; then
-    FIRMWARE="$FIRMWARE dvb-firmware"
-  fi
+  FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
 
 # build with lm_sensors hardware monitoring support (yes / no)
   SENSOR_SUPPORT="yes"
