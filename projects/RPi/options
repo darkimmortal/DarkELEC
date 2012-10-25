@@ -1,17 +1,7 @@
 # Name of the Distro to build (full name, without special charcters)
-<<<<<<< HEAD
-  if [ "$XBMC" = frodo ]; then
-    DISTRONAME="OpenELEC_frodo"
-  else
-    DISTRONAME="DarkELEC"
-  fi
 
-  if [ "$PVR" = yes ]; then
-    DISTRONAME="${DISTRONAME}_PVR"
-  fi
-=======
-  DISTRONAME="OpenELEC"
->>>>>>> upstream/master
+DISTRONAME="DarkELEC"
+
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
   GREETING0="##############################################"
