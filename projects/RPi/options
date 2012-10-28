@@ -96,7 +96,7 @@ DISTRONAME="DarkELEC"
 # Kernel to use. values can be:
 # default:  default mainline kernel
 # ti-omap4: Ti's OMAP4 kernel
-  LINUX="3.2"
+  LINUX="default"
 
 # use linux-next (latest rc) instead latest released version
   LINUX_NEXT="no"
@@ -159,7 +159,7 @@ DISTRONAME="DarkELEC"
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU"
+  ADDITIONAL_DRIVERS="RTL8192CU dvbhdhomerun"
 
 # build with network support (yes / no)
   NETWORK="yes"
